@@ -2,7 +2,7 @@
 
 The aim of this document is to share a landcover classification methodology
 
-#Table of Contents
+# Table of Contents
 - Introduction
 - Creating composite images 
 - Composite classification
