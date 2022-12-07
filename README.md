@@ -33,7 +33,7 @@ Map.centerObject(roi);
 ```
 
 
-# Spatial and temporal filtering 
+# Spatial and Temporal filtering 
 
 Being a cloud based remote sensing platform google earth engine makes available to the user the historical data for the individual collections. In order to ensure that you are working with the right data it is important to carry out filtering. Earth engine enables spatial and temporal level filtering. The code below queries Sentinel 2 data particularly its S2 and S2_SR collections. The data is filtered at a temporal level and at a spatial level. 
 ```javascript
@@ -89,4 +89,152 @@ print(collectionVH, 'Collection VH');
 //Filter by date
 var SARVV = collectionVV.filterDate('2019-01-01', '2019-12-10').mosaic();
 var SARVH = collectionVH.filterDate('2019-01-01', '2019-12-10').mosaic();
+```
+# Preprocessing 
+```javascript
+function maskS2clouds(image) {
+  var qa = image.select('QA60');
+
+  // Bits 10 and 11 are clouds and cirrus, respectively.
+  var cloudBitMask = 1 << 10;
+  var cirrusBitMask = 1 << 11;
+
+  // Both flags should be set to zero, indicating clear conditions.
+  var mask = qa.bitwiseAnd(cloudBitMask).eq(0)
+      .and(qa.bitwiseAnd(cirrusBitMask).eq(0));
+
+  return image.updateMask(mask).divide(10000);
+}
+
+//Apply filter to reduce speckle
+var SMOOTHING_RADIUS = 50;
+var SARVV_filtered = SARVV.focal_mean(SMOOTHING_RADIUS, 'circle', 'meters');
+var SARVH_filtered = SARVH.focal_mean(SMOOTHING_RADIUS, 'circle', 'meters');
+```
+
+# Combining Image Collections 
+```javascript
+
+//Perform required filtering, collection reductions and band selection.
+var fmaskFilt = LS8fmaskcol.map(maskS2clouds).select('B2', 'B3', 'B4', 'B8',  'B11', 'B12');
+var fmaskUnfilt = LS8fmaskcol.select('B2', 'B3', 'B4', 'B8',  'B11', 'B12');
+var medianFmasked = fmaskFilt.median().clip(roi).select('B2', 'B3', 'B4', 'B8',  'B11', 'B12');
+var t1Filt = ls8t1col.map(maskS2clouds).select('B2', 'B3', 'B4', 'B8',  'B11', 'B12');
+var t1Unfilt = ls8t1col.select('B2', 'B3', 'B4', 'B8',  'B11', 'B12');
+var t1median = t1Filt.median().clip(roi).select('B2', 'B3', 'B4', 'B8',  'B11', 'B12');
+var minUnmasked = ls8t1col.min().clip(roi).select('B2', 'B3', 'B4', 'B8',  'B11', 'B12');
+
+
+var mergedFilt = ee.ImageCollection(t1Filt.merge(fmaskFilt));
+print('merged, filtered T1 + Fmask TOA size: ',mergedFilt.size());
+
+var mergedUnfilt = ee.ImageCollection(fmaskUnfilt.merge(t1Unfilt));
+var mergedMedian = mergedFilt.median().clip(roi);
+var mergedUnfilt = mergedUnfilt.median().clip(roi);
+
+//This code fills in gaps with the median (or minimum) unfiltered pixels 
+var fillerMask = mergedMedian.unmask().not();
+var filler = mergedUnfilt.updateMask(fillerMask);
+var medT1 = (mergedMedian.unmask().add(filler.unmask()));
+
+
+//They are filled in the next step */
+medT1 = medT1//.clip(roi
+//.filter(ee.Filter.neq('Id',9))
+//.filter(ee.Filter.neq('Id',10))
+//.filter(ee.Filter.neq('Id',11))
+//);
+
+// This code fills in gaps with the t2 median pixels 
+var fillerMask = medT1.unmask().not();
+//var filler = t2median.updateMask(fillerMask);
+var final = (medT1.unmask().add(filler.unmask())).clip(roi);
+```
+
+# Visualising results 
+```javascript
+var ls8viz = {bands: 'B4,B3,B2', gamma: 2};
+var visualization = {
+  min: 0.0,
+  max: 0.3,
+  bands: ['B4', 'B3', 'B2'],
+};
+
+Map.addLayer(final, visualization, 'As below, GF with T2 median (final)');
+var image = final//.clip(roi.filter(ee.Filter.eq('Id',24)));
+
+```
+
+# Normalised Difference Spectral Vector
+```javascript
+var toNDSVLS8 = function(image){
+image = image.select(
+  ['B2', 'B3', 'B4', 'B8', 'B11', 'B12'],
+  ['B1','B2', 'B3', 'B4', 'B5', 'B6']
+  );
+var ndsv = image.normalizedDifference(['B1','B2']).rename('R1');
+ndsv = ndsv.addBands(image.normalizedDifference(['B1','B3']).rename('R2'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B1','B4']).rename('R3'));
+
+ndsv = ndsv.addBands(image.normalizedDifference(['B2','B3']).rename('R4'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B2','B4']).rename('R5'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B5','B1']).rename('R7'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B5','B2']).rename('R8'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B5','B3']).rename('R9'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B5','B4']).rename('R10'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B5','B6']).rename('R11'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B6','B1']).rename('R12'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B6','B2']).rename('R13'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B6','B3']).rename('R14'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B6','B4']).rename('R15'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B4','B3']).rename('NDVI')); //NDVI
+  // normalized difference moisture index
+ndsv = ndsv.addBands(image.normalizedDifference(['B6','B2']).rename('NDMI'));
+ndsv = ndsv.addBands(image.normalizedDifference(['B2','B5']).rename('MNDWI'));// Modified Normalized Difference Water Index
+ndsv = ndsv.addBands(image.select('B4').divide(image.select('B3')).rename('SR')); // Simple Ratio
+ndsv = ndsv.addBands(image.select('B5').divide(image.select('B4')).rename('R54'));// Ratio 54
+ndsv = ndsv.addBands(image.select('B3').divide(image.select('B5')).rename('R35'));
+ndsv = ndsv.addBands(image.expression('(NIR/GREEN)-1',{ 
+  'NIR':image.select('B4'), 
+  'GREEN':image.select('B2')}));
+ndsv = ndsv.addBands(image.normalizedDifference(['B3','B4']).rename('R6'));
+
+return ndsv.clip(roi)
+};
+
+var nd = toNDSVLS8(image);
+```
+# Data Fusion 
+```javascript
+var opt_sar = ee.Image.cat(nd, SARVV_filtered,SARVH_filtered);
+```
+
+# Image Export 
+```javascript
+
+Export.image.toAsset({
+  image: opt_sar, 
+  description: year[0]+'opt_sar'+place+'_clipped',
+  assetId: place+'/NDSV/'+year[0]+'opt_sar'+place+'_clipped',
+  region: roi,//.geometry().bounds(), 
+  scale: 10, 
+  maxPixels: 1e13
+});
+
+Export.image.toAsset({
+  image: image.select('B2', 'B3', 'B4', 'B8'),
+  description: year[0]+'_S2_Full_median_'+place+'_clipped',
+  assetId: place+'/full_composite/S2_'+year[0]+'_new_median_full_composite_'+place+'_clipped', 
+  region: roi,//.geometry().bounds(), 
+  scale: 10, 
+  maxPixels: 1e13});
+  
+  Export.image.toAsset({
+  image: nd, 
+  description: year[0]+'_S2_NDSV_'+place+'_clipped',
+  assetId: place+'/NDSV/'+year[0]+'_S2_NDSV_'+place+'_clipped',
+  region: roi,//.geometry().bounds(), 
+  scale: 10, 
+  maxPixels: 1e13
+});
 ```
