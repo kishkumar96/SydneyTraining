@@ -18,7 +18,7 @@ The project uses a fusion of optical (Sentinel 2) and synthetic aperture radar (
 # Creating composite images 
 ###### [Working example of creating image composites using Sentinel 2 and Sentinel 1] (https://code.earthengine.google.com/?scriptPath=users%2Fkishan2196%2FRBBPScripts%3ALandcover%20Scripts%2FScript1_OpticalAndSAR%20indice%20calculation )
 
-'''javascript
+```javascript
 var place = 'Tonga';
 var group = '';
 
@@ -30,4 +30,4 @@ Map.addLayer(roi,{},'ROI');
 
 //Center the map view on the ROI
 Map.centerObject(roi);
-'''
+```
