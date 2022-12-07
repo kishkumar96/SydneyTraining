@@ -35,6 +35,7 @@ Map.centerObject(roi);
 
 # Spatial and temporal filtering 
 
+Being a cloud based remote sensing platform google earth engine makes available to the user the historical data for the individual collections. In order to ensure that you are working with the right data it is important to carry out filtering. Earth engine enables spatial and temporal level filtering. The code below queries Sentinel 2 data particularly its S2 and S2_SR collections. The data is filtered at a temporal level and at a spatial level. 
 ```javascript
 // Select date 
 var year = ['2021','2021'];
@@ -46,7 +47,6 @@ var end = ee.Date(year[1]+'-12-31');
 var LS8fmaskcol =  ee.ImageCollection('COPERNICUS/S2_SR')
   .filterDate(start,end)
   .filterBounds(roi);
-  //.filter(ee.Filter.neq('LANDSAT_SCENE_ID', 'LC81220482016022LGN00'));
 print(LS8fmaskcol);
 print('Precollection TOA fmask size: ', LS8fmaskcol.size());
 
@@ -58,6 +58,10 @@ var ls8t1col = ee.ImageCollection('COPERNICUS/S2')
   .filterBounds(roi);
 print('T1 size',ls8t1col.size());
 
+```
+
+The available varied collections on earth engine allow filtering unique to there individual metadata. The code below queries Senitnel 1, in terms of polarizations focusing on VV and VH at 10 meter level resolution. 
+```javascript
 // Load Sentinel-1 C-band SAR Ground Range collection (log scale, VV,
 //descending)
 var collectionVV = ee.ImageCollection('COPERNICUS/S1_GRD')
