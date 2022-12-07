@@ -16,4 +16,5 @@ The resilient boundaries for the blue pacific project is a research project that
 The project uses a fusion of optical (Sentinel 2) and synthetic aperture radar (sentinel 1) to conduct landcover classificaiton wherever the data is available. The rationale behind this is that fusion of the two datasets produces higher accuracy in classification for sand and urban classes whereby it also solves the cloud problem of classification using optical data only.
 
 # Creating composite images 
-Working example - https://code.earthengine.google.com/2fdd7523af29e67e3eb6849bd6eb38cf 
+###### [Working example of creating image composites using Sentinel 2 and Sentinel 1] (https://code.earthengine.google.com/?scriptPath=users%2Fkishan2196%2FRBBPScripts%3ALandcover%20Scripts%2FScript1_OpticalAndSAR%20indice%20calculation )
+
