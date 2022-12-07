@@ -36,6 +36,13 @@ Map.centerObject(roi);
 # Spatial and temporal filtering 
 
 ```javascript
+// Select date 
+var year = ['2021','2021'];
+print('Year: ',year[0]);
+print(roi);
+var start = ee.Date(year[0]+'-01-01');
+var end = ee.Date(year[1]+'-12-31');
+
 var LS8fmaskcol =  ee.ImageCollection('COPERNICUS/S2_SR')
   .filterDate(start,end)
   .filterBounds(roi);
