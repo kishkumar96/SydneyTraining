@@ -91,6 +91,7 @@ var SARVV = collectionVV.filterDate('2019-01-01', '2019-12-10').mosaic();
 var SARVH = collectionVH.filterDate('2019-01-01', '2019-12-10').mosaic();
 ```
 # Preprocessing 
+Preprocessing enables the removal of noise from the data and enables it to conform to the preferred state. Hence, since the collections have been defined and filtered we can now preprocess them. For Sentinel 2 data preprocessing is done through cloud masking whereas for Sentinel 1 data speckle filtering is applied. 
 ```javascript
 function maskS2clouds(image) {
   var qa = image.select('QA60');
@@ -113,6 +114,7 @@ var SARVH_filtered = SARVH.focal_mean(SMOOTHING_RADIUS, 'circle', 'meters');
 ```
 
 # Combining Image Collections 
+Now it starts getting a bit more technical. While you may wish to use only one image collection in your workflow for the sake of simplicity, better results may be possible by combining multiple collections (i.e. S2_SR, S2, masked and unmasked) to achieve maximum coverage and image quality. In the first code snippet the gaps in the filtered S2 collection (where there have been clouds detected for a pixel representing the same geographic location in every image in the collection) are filled by using an unfiltered median or min composite. This ensures no gaps persist, but the trade-off is that cloud artefacts may persist in the final composite.
 ```javascript
 
 //Perform required filtering, collection reductions and band selection.
@@ -166,7 +168,7 @@ var image = final//.clip(roi.filter(ee.Filter.eq('Id',24)));
 ```
 
 # Normalised Difference Spectral Vector
-The normalised difference spectral vector composite is a computed image where every band of the image is a computed remote sensing indices. 
+The normalised difference spectral vector composite is a computed image where every band of the image is a computed remote sensing indices. Using the normalised difference spectral vector (NDSV) approach improved classification performance in this study. This involves producing a pseudo multispectral image from all possible unique band ratios.
 ```javascript
 var toNDSVLS8 = function(image){
 image = image.select(
@@ -206,11 +208,15 @@ return ndsv.clip(roi)
 var nd = toNDSVLS8(image);
 ```
 # Data Fusion 
+To enable classification using Sentinel 2 and Sentinel 1 together the merging of the two into one entity is important. Hence the NDSV composite is combined into one composite using ee.Image.cat() function. 
 ```javascript
 var opt_sar = ee.Image.cat(nd, SARVV_filtered,SARVH_filtered);
 ```
 
 # Image Export 
+Depending on the size of your study area and the number of scenes being reduced, it make take some considerable time for GEE to process the final composite. You may also notice that the composite takes a while to reload when the zoom level is changed - this is because GEE processes at the scale set by the zoom level - essentially a level in the pyramid approach common to many GIS platforms.
+
+Any subsequent calculations that rely on the final composite will also be slow, since it will need to be computed beforehand. Some more complex calculations, such as classification, may not work at all, timing out or running over the GEE user memory limit. This issue becomes magnified when trying to deal with multiple composites covering different date ranges - clearly processing multiple composites within the same script would be difficult and highly inefficient. To address this issue, images and features that are created within GEE scripts may be exported as a GEE asset. After export, assets may be imported into a script from the assets tab (on the left of the window by default). Imported assets perform much better in complex calculations, as less processing needs to be done 'on the fly. Both images and features may also be exported to the drive of the google account associated with GEE, allowing data produced in GEE to be used outside of it in the traditional matter. The following code snippet shows how the final composite (finalComp) is exported as a GEE asset. There are a few things to note here: the Export.image.toAsset() function takes several arguments, but not all are required, and some (such as scale) make others redundant. In cases like these, it can be easier to use curly brackets { } within the function brackets ( ). This allows the arguments to be specifically called by name and followed by: before answering the argument as normal. This can also make it clearer what each argument in a complex function is doing, improving readability.
 ```javascript
 
 Export.image.toAsset({
@@ -241,6 +247,9 @@ Export.image.toAsset({
 ```
 # Composite Classification
 ###### [Script to classify] (https://code.earthengine.google.com/?scriptPath=users%2Fkishan2196%2FRBBPScripts%3ALandcover%20Scripts%2FScript2_Image%20classification)
+Now that the composite imagery has been generated and saved as assets, they can be classified. Classification involves using a special algorithm (a classifier) to determine which of a user defined group of classes each pixel is most likely to represent. In this case, decisions are based upon the spectral values of each pixel (per band) after the classifier has been trained using a labelled dataset of representative pixels. For more information on classification within GEE, see this GEE Classification video tutorial. For the purposes of this tutorial, a single date classification (training data sampled from one image) will be prepared initially, then multi-date classification will be discussed.
+
+For ease of use, I created a new script for classification, keeping it separate from the code which produces the composites detailed above. To begin, in a new script the previously generated composite NDSV image was defined as the variable toClassify and clipped to the ROI (the same as the previous script). Note that clipping does not carry over in exported assets: the area clipped out when generating the composite will be all black (i.e. null), but for visualistion purposes it is best to clip this off by clipping the image again. This code also adds the image to be classified to the map view (Map.addLayer(...)).
 ```javascript
 var year ='2021';
 print('Year: '+year);
