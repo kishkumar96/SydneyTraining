@@ -239,7 +239,7 @@ Export.image.toAsset({
 });
 ```
 # Composite Classification
-###### [Script to classify] (https://code.earthengine.google.com/3c031a3f35387e9b260d46d7cda66af3)
+###### [Script to classify] (https://code.earthengine.google.com/?scriptPath=users%2Fkishan2196%2FRBBPScripts%3ALandcover%20Scripts%2FScript2_Image%20classification)
 ```javascript
 var year ='2021';
 print('Year: '+year);
