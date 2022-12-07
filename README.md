@@ -35,7 +35,8 @@ Map.centerObject(roi);
 
 # Spatial and temporal filtering 
 
-```var LS8fmaskcol =  ee.ImageCollection('COPERNICUS/S2_SR')
+```javascript
+var LS8fmaskcol =  ee.ImageCollection('COPERNICUS/S2_SR')
   .filterDate(start,end)
   .filterBounds(roi);
   //.filter(ee.Filter.neq('LANDSAT_SCENE_ID', 'LC81220482016022LGN00'));
