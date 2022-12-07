@@ -18,3 +18,17 @@ The project uses a fusion of optical (Sentinel 2) and synthetic aperture radar (
 # Creating composite images 
 ###### [Working example of creating image composites using Sentinel 2 and Sentinel 1] (https://code.earthengine.google.com/?scriptPath=users%2Fkishan2196%2FRBBPScripts%3ALandcover%20Scripts%2FScript1_OpticalAndSAR%20indice%20calculation )
 
+'''
+
+var place = 'Tonga';
+var group = '';
+
+//Select roi
+var roi = Tongatapu;
+
+//Add roi to the map. Using the in777777777777777777777777777777777777777777777777777777777777777spector tab allows name and id to be verified by clicking.
+Map.addLayer(roi,{},'ROI');
+
+//Center the map view on the ROI
+Map.centerObject(roi);
+'''
