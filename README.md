@@ -265,6 +265,8 @@ toClassify = toClassify.clip(roi);
 ```
 # Creating Training Samples
 Training samples generally take the form of polygonal geometries within which pixels are sampled. As such, they can be created within GEE using the built-in geometry tools, or imported from existing shapefiles etc. The important thing here is that the training samples have a property which describes which class they represent. When using the GEE geometry tools, this can be achieved by clicking the cog icon next to the layer in the geometry list at the top left corner of the map view and selecting to import as a feature or featureCollection (I found that featureCollection works well in this instance). This will allow you to add a property to the training sample, such as 'class' etc. Generally, classes are coded by number (i.e. water = 0, vegetation = 1, urban = 2). This allows easy visualisation and later accuracy assessment. The image below shows a composite image with several training polygons representing different classes (e.g. black for water, green for vegetation).
+```javascript
+
 var Training = 
     /* color: #d63000 */
     /* shown: false */
@@ -2023,6 +2025,8 @@ var Training =
     TuvanaIRaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarTuvanaIRa_clipped"),
     FijiSar2019 = ee.Image("users/kishan2196/Fiji_islands/NDSV/2019opt_sarFiji_clipped"),
     image6 = ee.Image("projects/ee-kishan21962/assets/Tonga/NDSV/2021opt_sarTonga_clipped");
+    ```
+
 #  Sampling the Image
 ```javascript
 
