@@ -385,9 +385,7 @@ print('Accuracy: (correct/total)', errorMatrix.accuracy());
 print('Consumer\'s accuracy (comission) (across):', errorMatrix.consumersAccuracy());
 print('Producer\'s accuracy (omission) (down):', errorMatrix.producersAccuracy());
 // Produce and print an error matrix of the binary results
-var errorMatrixBinary = binarySample.errorMatrix('landcover', 'remapped')
-print('Binary Accuracy:', errorMatrixBinary.accuracy());
-print('Binary Confusion table:', errorMatrixBinary);
+
 // Visualise the resulting classification
 ```
 ```javascript
