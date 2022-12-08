@@ -268,13 +268,12 @@ Training samples generally take the form of polygonal geometries within which pi
 ```javascript
 
 
-    OnoSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarono_clipped"),
-    QelelevuSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarqelelvu_clipped"),
-    SigatokaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarSigatoka_clipped"),
-    SuvaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarSuvaall_clipped"),
-    TuvanaIRaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarTuvanaIRa_clipped"),
-    FijiSar2019 = ee.Image("users/kishan2196/Fiji_islands/NDSV/2019opt_sarFiji_clipped"),
-    ```
+var OnoSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarono_clipped")
+var QelelevuSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarqelelvu_clipped")
+var SigatokaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarSigatoka_clipped")
+var SuvaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarSuvaall_clipped")
+var TuvanaIRaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarTuvanaIRa_clipped")
+var FijiSar2019 = ee.Image("users/kishan2196/Fiji_islands/NDSV/2019opt_sarFiji_clipped")
 
 #  Sampling the Image
 ```javascript
