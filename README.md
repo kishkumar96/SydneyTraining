@@ -409,6 +409,9 @@ Export.image.toAsset({
   maxPixels: 1e13,
   pyramidingPolicy: {".default": "mode"},
 });
-
+	// Produce binary image and assess accuracy
+// Collaspe classes into land and non-land using remap, add result to the map
+var binary = classified.remap([0,1,2,3,4],[0,1,1,0, 1])
+Map.addLayer(binary,{max: 1, min: 0},'Binary land/non-land classification',false)
   ```
   
