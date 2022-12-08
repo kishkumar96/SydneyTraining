@@ -409,10 +409,6 @@ Export.image.toAsset({
   maxPixels: 1e13,
   pyramidingPolicy: {".default": "mode"},
 });
-Export.table.toDrive({
-	collection: aaPoints, 
-	description:'aa_points', 
-	folder:'seperate_outputs', 
-	fileFormat :'SHP'})
+
   ```
   
