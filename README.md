@@ -274,7 +274,7 @@ var SigatokaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarSigato
 var SuvaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarSuvaall_clipped")
 var TuvanaIRaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarTuvanaIRa_clipped")
 var FijiSar2019 = ee.Image("users/kishan2196/Fiji_islands/NDSV/2019opt_sarFiji_clipped")
-
+var SigatokaSar = ee.Image("users/kishan2196/Fiji_islands/NDSV/2020opt_sarSigatoka_clipped")
 
 
 // Produce median images to sample from
