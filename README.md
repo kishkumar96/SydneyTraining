@@ -1,6 +1,6 @@
 # SydneyTraining
 
-This document aims to share a landcover classification methodology. 
+This document aims to share instructions for landcover classification using the fusion of Sentinel 2 and 1 data. The shared methodology is a modification of the methods in the paper below.  
 
 Holdaway, A., Ford, M., & Owen, S. (2021). Global-scale changes in the area of atoll islands during the 21st century. Anthropocene, 33(2020), 100282. https://doi.org/10.1016/j.ancene.2021.100282
 ![image](https://user-images.githubusercontent.com/53712176/206316052-0ec32b55-df72-45a8-b33e-e278cf914378.png)
